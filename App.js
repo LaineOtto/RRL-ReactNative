@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, } from 'react-native';
+import { View, Text, TextInput, Button, } from 'react-native';
 import { getFictionUrl, } from './network.js';
 
 const getPage = async (fictionId, chapterId) => {
   var url = "https://www.royalroad.com/fiction/" + fictionId;
+  console.log("url: " + url);
 
   if (!(chapterId)) {
     var htmlString =
-      await fetch(url)
+      await fetch(url) // TODO: Move to network.js
       .then(response => response.text())
       .then(text => {
         return text;
@@ -29,12 +30,30 @@ const getPage = async (fictionId, chapterId) => {
   }
 };
 
-const App = () => {
-  const [fictionId, setFictionId] = useState("");
-  const [chapterId, setChapterId] = useState("");
+const fictionPageButton = (fictionId) => {
+  var fictionPage = getPage(fictionId);
+  // TODO: parse fictionPage for ch list
+}
 
-  var response = getPage("21220", "301778");
-  return <Text>asdf</Text>;
+const App = () => {
+  const [fictionId, setFictionId] = useState('');
+  return (
+    <View style={{padding: 10}}>
+      <TextInput
+        style={{height: 40}}
+        placeholder="Fiction Id"
+        onChangeText={text => setFictionId(text)}
+        defaultValue={fictionId}
+      />
+      <Button
+        title="Get Page"
+        onPress={() => fictionPageButton(fictionId)}
+      />
+      <Text style={{padding: 10, fontSize: 42}}>
+        {fictionId}
+      </Text>
+    </View>
+  );
 };
 
 export default App;
