@@ -11,7 +11,7 @@ export const parseForChapterLinks = (fictionPage) => {
   $('td a').each(function(i, elem) { //for each 'td a' add its link to chLinks
     var href = $(this).attr('href');
     if (href) {
-      chapterLinks[j] = href;
+      chapterLinks[j] = "https://www.royalroad.com" + href;
       j += 1;
     }
   });
