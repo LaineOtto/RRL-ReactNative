@@ -1,50 +1,39 @@
-import React from 'react';
-import { View, Text, } from 'react-native';
-import { getFictionUrl, fetchUrlAsync, } from './parse.js';
+import React, { useState } from 'react';
+import { View, Text, TextInput, } from 'react-native';
+import { getFictionUrl, } from './network.js';
 
-const getPage = async (fictionId, chapterID) => {
+const getPage = async (fictionId, chapterId) => {
   var url = "https://www.royalroad.com/fiction/" + fictionId;
-  var chapterUrl;
-  var htmlString;
 
-  if (!(chapterID)) {
-    fetch(url)
-    .then(response => response.text())
-    .then(text => {
-      htmlString = text;
-      console.log(htmlString);
-    })
-    .catch((error) => {
-      console.error(error);
+  if (!(chapterId)) {
+    var htmlString =
+      await fetch(url)
+      .then(response => response.text())
+      .then(text => {
+        return text;
+      })
+      .catch((error) => {
+        console.error(error);
     });
+    console.log(htmlString);
+    return htmlString;
   } else {
-    var fictionUrl;
-    fetchUrlAsync(url)
-    .then(response => {
-      console.log("abcd: " + response);
+    var fictionUrl =
+      await getFictionUrl(url)
+      .then(response => {
+        return response;
     });
 
-    // fetch(chapterUrl)
-    // .then(response => response.text())
-    // .then(text => {
-    //   htmlString = text;
-    //   console.log(htmlString);
-    // })
-    // .catch((error) => {
-    //   console.error(error);
-    // });
+    chapterIdUrl = fictionUrl + "/" + chapterId + "/index.html";
+    console.log("chapterIdUrl: " + chapterIdUrl);
   }
-
-  // if (chapterID) {
-  //   //parse response.text for fiction url at <meta property="og:url"...
-  //   //url = above + "/" + chapterID
-  //   //fetch(url)
-  // }
 };
 
 const App = () => {
+  const [fictionId, setFictionId] = useState("");
+  const [chapterId, setChapterId] = useState("");
+
   var response = getPage("21220", "301778");
-  // console.log("app response: " + response);
   return <Text>asdf</Text>;
 };
 
