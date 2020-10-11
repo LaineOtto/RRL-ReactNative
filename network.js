@@ -1,8 +1,11 @@
-const cheerio = require('react-native-cheerio');
+/**
+ *  network.js - For making network requests
+ *
+ */
 
 export const getFictionUrl = async (fictionIdUrl) => {
   var fictionUrl =
-    await fetch(fictionIdUrl) // TODO: put in separate file so I can return the url as a string
+    await fetch(fictionIdUrl)
     .then(response => response.url)
     .then(url => {
       return url;
@@ -12,3 +15,16 @@ export const getFictionUrl = async (fictionIdUrl) => {
   });
   return fictionUrl;
 };
+
+export const getFictionPageText = async (url) => {
+  var htmlString =
+    await fetch(url)
+    .then(response => response.text())
+    .then(text => {
+      return text;
+    })
+    .catch((error) => {
+      console.error(error);
+  });
+  return htmlString;
+}

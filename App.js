@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, } from 'react-native';
-import { getFictionUrl, } from './network.js';
+import { getFictionUrl, getFictionPageText, } from './network.js';
 
 const getPage = async (fictionId, chapterId) => {
   var url = "https://www.royalroad.com/fiction/" + fictionId;
@@ -8,22 +8,13 @@ const getPage = async (fictionId, chapterId) => {
 
   if (!(chapterId)) {
     var htmlString =
-      await fetch(url) // TODO: Move to network.js
-      .then(response => response.text())
-      .then(text => {
-        return text;
-      })
-      .catch((error) => {
-        console.error(error);
-    });
-    console.log(htmlString);
-    return htmlString;
+      await getFictionPageText(url)
+      .then(response => {return response;});
+    console.log("htmlString2: " + htmlString);
   } else {
     var fictionUrl =
       await getFictionUrl(url)
-      .then(response => {
-        return response;
-    });
+      .then(response => {return response;});
 
     chapterIdUrl = fictionUrl + "/" + chapterId + "/index.html";
     console.log("chapterIdUrl: " + chapterIdUrl);
