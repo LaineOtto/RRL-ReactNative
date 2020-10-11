@@ -3,7 +3,6 @@ import { View, Text, TextInput, Button, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-// import { homeScreen, chapterList, } from './components.js';
 import { getFictionPage, } from './network.js';
 import { parseForChapterLinks, } from './parse.js';
 
@@ -36,13 +35,26 @@ export const homeScreen = ({ navigation }) => {
 
 export const chapterList = ({ route, navigation }) => {
   var chapterLinks = route.params;
-  console.log(chapterLinks);
   return (
     <ScrollView>
       {chapterLinks.map((link) => (
-        <Text>{link}</Text>
+        <Button
+          title={link}
+          onPress={() => {
+            console.log("onPress: " + link);
+            navigation.navigate('Read Chapter', link);
+          }}
+        />
       ))}
     </ScrollView>
+  );
+}
+
+export const readChapter = ({ route, navigation }) => {//does this need navigation?
+  var chapterUrl = route.params;
+  console.log(chapterUrl);
+  return (
+    <Text>{chapterUrl}</Text>
   );
 }
 
@@ -55,6 +67,7 @@ const App = () => {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={homeScreen} />
         <Stack.Screen name="Chapter List" component={chapterList} />
+        <Stack.Screen name="Read Chapter" component={readChapter} />
       </Stack.Navigator>
     </NavigationContainer>
   );
