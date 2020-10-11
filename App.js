@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, } from 'react-native';
+
 import { getFictionUrl, getFictionPageText, } from './network.js';
+import { parseForChapterLinks, } from './parse.js';
 
 const getPage = async (fictionId, chapterId) => {
   var url = "https://www.royalroad.com/fiction/" + fictionId;
@@ -10,7 +12,7 @@ const getPage = async (fictionId, chapterId) => {
     var htmlString =
       await getFictionPageText(url)
       .then(response => {return response;});
-    console.log("htmlString2: " + htmlString);
+    return htmlString;
   } else {
     var fictionUrl =
       await getFictionUrl(url)
@@ -21,16 +23,19 @@ const getPage = async (fictionId, chapterId) => {
   }
 };
 
-const fictionPageButton = (fictionId) => {
-  var fictionPage = getPage(fictionId);
-  // TODO: parse fictionPage for ch list
+const fictionPageButton = async (fictionId) => {
+  var fictionPage =
+    await getPage(fictionId)
+    .then(response => {return response;});
+  var chapterLinks = parseForChapterLinks(fictionPage);
+  console.log(chapterLinks);
 }
 
 const App = () => {
   const [fictionId, setFictionId] = useState('');
   return (
     <View style={{padding: 10}}>
-      <TextInput
+      <TextInput // TODO: Check this raw input
         style={{height: 40}}
         placeholder="Fiction Id"
         onChangeText={text => setFictionId(text)}
