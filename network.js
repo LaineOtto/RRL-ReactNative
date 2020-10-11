@@ -3,20 +3,7 @@
  *
  */
 
-export const getFictionUrl = async (fictionIdUrl) => {
-  var fictionUrl =
-    await fetch(fictionIdUrl)
-    .then(response => response.url)
-    .then(url => {
-      return url;
-    })
-    .catch((error) => {
-      console.error(error);
-  });
-  return fictionUrl;
-};
-
-export const getFictionPageText = async (url) => {
+export const getPageText = async (url) => {
   var htmlString =
     await fetch(url)
     .then(response => response.text())
@@ -26,5 +13,16 @@ export const getFictionPageText = async (url) => {
     .catch((error) => {
       console.error(error);
   });
+  
   return htmlString;
 }
+
+export const getFictionPage = async (fictionId) => {
+  var url = "https://www.royalroad.com/fiction/" + fictionId;
+  console.log("url: " + url);
+  var htmlString =
+    await getPageText(url)
+    .then(response => {return response;});
+
+  return htmlString;
+};
