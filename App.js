@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { View, Text, TextInput, Button, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+// import AsyncStorage from '@react-native-community/async-storage';
+import { WebView } from 'react-native-webview';
 
-import { getFictionPage, } from './network.js';
+
+import { getFictionPage, getPageText, } from './network.js';
 import { parseForChapterLinks, } from './parse.js';
 
 const fictionPageButton = async (fictionId, { navigation }) => {
@@ -14,7 +17,7 @@ const fictionPageButton = async (fictionId, { navigation }) => {
   navigation.navigate('Chapter List', chapterLinks);
 }
 
-export const homeScreen = ({ navigation }) => {
+const homeScreen = ({ navigation }) => {
   const [fictionId, setFictionId] = useState('');
 
   return (
@@ -33,7 +36,7 @@ export const homeScreen = ({ navigation }) => {
   );
 }
 
-export const chapterList = ({ route, navigation }) => {
+const chapterList = ({ route, navigation }) => {
   var chapterLinks = route.params;
   return (
     <ScrollView>
@@ -41,7 +44,6 @@ export const chapterList = ({ route, navigation }) => {
         <Button
           title={link}
           onPress={() => {
-            console.log("onPress: " + link);
             navigation.navigate('Read Chapter', link);
           }}
         />
@@ -50,11 +52,23 @@ export const chapterList = ({ route, navigation }) => {
   );
 }
 
-export const readChapter = ({ route, navigation }) => {//does this need navigation?
+const getPageAsync = async (chapterUrl) => {
+  var htmlString =
+    await getPageText(chapterUrl)
+    .then(response => {return response;});
+  console.log(htmlString);
+  return htmlString;
+}
+
+const readChapter = ({ route, navigation }) => {
   var chapterUrl = route.params;
   console.log(chapterUrl);
+  // var htmlString = getPageAsync(chapterUrl);
+  // console.log(htmlString);
   return (
-    <Text>{chapterUrl}</Text>
+    <WebView
+      source={{ uri: chapterUrl }}
+    />
   );
 }
 
