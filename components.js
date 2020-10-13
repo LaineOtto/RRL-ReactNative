@@ -20,6 +20,7 @@
  };
 
  export const homeScreen = ({ navigation }) => {
+   const [isLoading, setIsLoading] = useState(false);
    const [fictionId, setFictionId] = useState('');
 
    return (
@@ -31,8 +32,11 @@
          defaultValue={fictionId}
        />
        <Button
-         title="Get Page"
-         onPress={() => fictionPageButton(fictionId, {navigation})}
+         title={isLoading ? "Loading..." : "Get Page"}
+         onPress={() => {
+           setIsLoading(true);
+           fictionPageButton(fictionId, {navigation})
+         }}
        />
      </View>
    );
