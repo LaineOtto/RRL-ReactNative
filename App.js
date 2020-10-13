@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { homeScreen, chapterList, readChapter } from './components.js';
+import { homeScreen, chapterList, readChapter, searchResults } from './components.js';
 
 const Stack = createStackNavigator();
 
@@ -14,6 +14,7 @@ const App = () => {
         <Stack.Screen name="Home" component={homeScreen} />
         <Stack.Screen name="Chapter List" component={chapterList} />
         <Stack.Screen name="Read Chapter" component={readChapter} />
+        <Stack.Screen name="Search Results" component={searchResults} />
       </Stack.Navigator>
     </NavigationContainer>
   );

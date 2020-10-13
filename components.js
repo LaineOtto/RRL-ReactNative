@@ -14,6 +14,7 @@
  export const homeScreen = ({ navigation }) => {
    const [isLoading, setIsLoading] = useState(false);
    const [fictionId, setFictionId] = useState('');
+   const [searchTerm, setSearchTerm] = useState('');
 
    useFocusEffect(
      React.useCallback(() => {
@@ -37,12 +38,33 @@
            navigation.navigate('Chapter List', fictionId);
          }}
        />
+       <TextInput // TODO: Check this raw input
+         style={{height: 40}}
+         placeholder="Search Term"
+         onChangeText={text => setSearchTerm(text)}
+         defaultValue={searchTerm}
+       />
+       <Button
+         title={isLoading ? "Loading..." : "Search"}
+         disabled={isLoading ? true : false}
          onPress={() => {
            setIsLoading(true);
-           fictionPageButton(fictionId, {navigation})
+           navigation.navigate('Search Results', searchTerm);
          }}
        />
      </View>
+   );
+ };
+
+ export const searchResults = ({ route, navigation }) => {
+    const searchUrl =
+      "https://www.royalroad.com/fictions/search?title=" +
+      route.params;
+    console.log(searchUrl);
+   // TODO: Fetch and display search html
+
+   return (
+     <Text>{searchUrl}</Text>
    );
  };
 
