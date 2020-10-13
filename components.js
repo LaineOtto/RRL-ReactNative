@@ -6,6 +6,7 @@
  import { View, Text, TextInput, Button, ScrollView, useWindowDimensions } from 'react-native';
  import { WebView } from 'react-native-webview';
  import HTML from "react-native-render-html";
+ import { useFocusEffect } from '@react-navigation/native';
 
  import { getFictionPage, getPageText, } from './network.js';
  import { parseForChapterLinks, parseChapterContent } from './parse.js';
@@ -15,13 +16,19 @@
      await getFictionPage(fictionId)
      .then(response => {return response;});
    var chapterLinks = parseForChapterLinks(fictionPage);
-   console.log(chapterLinks);
+   // console.log(chapterLinks);
    navigation.navigate('Chapter List', chapterLinks);
  };
 
  export const homeScreen = ({ navigation }) => {
    const [isLoading, setIsLoading] = useState(false);
    const [fictionId, setFictionId] = useState('');
+
+   useFocusEffect(
+     React.useCallback(() => {
+       setIsLoading(false);
+     }, [])
+   );
 
    return (
      <View style={{padding: 10}}>
@@ -33,6 +40,7 @@
        />
        <Button
          title={isLoading ? "Loading..." : "Get Page"}
+         disabled={isLoading ? true : false}
          onPress={() => {
            setIsLoading(true);
            fictionPageButton(fictionId, {navigation})
@@ -61,7 +69,7 @@
  export const readChapter = ({ route, navigation }) => {
    const [chapterUrl, setChapterUrl] = useState(route.params);
    const [htmlString, setHtmlString] = useState('');
-   console.log("chapterUrl: " + chapterUrl);
+   // console.log("chapterUrl: " + chapterUrl);
 
    useEffect(() => {
      const getPageAsync = async () => {
@@ -78,7 +86,7 @@
 
    // console.log("sync: " + htmlString);
    const chapterContent = parseChapterContent(htmlString);
-   console.log("chapterContent: " + chapterContent);
+   // console.log("chapterContent: " + chapterContent);
 
    const contentWidth = useWindowDimensions().width;
    return (
