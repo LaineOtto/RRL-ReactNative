@@ -17,3 +17,9 @@ export const parseForChapterLinks = (fictionPage) => {
   });
   return chapterLinks;
 }
+
+export const parseChapterContent = (htmlString) => {
+  const $ = cheerio.load(htmlString);
+  const chapterContent = $('.chapter-inner').html();
+  return chapterContent;
+}

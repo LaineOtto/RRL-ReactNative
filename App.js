@@ -6,7 +6,7 @@ import { WebView } from 'react-native-webview';
 import HTML from "react-native-render-html";
 
 import { getFictionPage, getPageText, } from './network.js';
-import { parseForChapterLinks, } from './parse.js';
+import { parseForChapterLinks, parseChapterContent } from './parse.js';
 
 const fictionPageButton = async (fictionId, { navigation }) => {
   var fictionPage =
@@ -56,14 +56,13 @@ const readChapter = ({ route, navigation }) => {
   const [chapterUrl, setChapterUrl] = useState(route.params);
   const [htmlString, setHtmlString] = useState('');
   console.log("chapterUrl: " + chapterUrl);
-  // var htmlString = getPageAsync(chapterUrl)
 
   useEffect(() => {
     const getPageAsync = async () => {
       var htmlString =
         await getPageText(chapterUrl)
         .then(response => {return response;});
-      console.log("async: " + htmlString);
+      // console.log("async: " + htmlString);
 
       setHtmlString(htmlString);
     };
@@ -71,20 +70,16 @@ const readChapter = ({ route, navigation }) => {
     getPageAsync(chapterUrl);
   }, []);
 
-  console.log("sync: " + htmlString);
+  // console.log("sync: " + htmlString);
+  const chapterContent = parseChapterContent(htmlString);
+  console.log("chapterContent: " + chapterContent);
+
   const contentWidth = useWindowDimensions().width;
   return (
     <ScrollView style={{ flex: 1 }}>
-      <HTML html={htmlString} contentWidth={contentWidth} />
+      <HTML html={chapterContent} contentWidth={contentWidth} />
     </ScrollView>
   );
-  // return (
-  //   <ScrollView>
-  //     <Text>
-  //       asdf
-  //     </Text>
-  //   </ScrollView>
-  // );
 }
 
 const Stack = createStackNavigator();
