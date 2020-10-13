@@ -2,7 +2,7 @@
  *  network.js - For making network requests
  *
  */
-export const getPageText = async (url) => {
+export const getPageHtml = async (url) => {
   var htmlString =
     await fetch(url)
     .then(response => response.text())
@@ -16,10 +16,10 @@ export const getPageText = async (url) => {
   return htmlString;
 }
 
-export const getFictionPage = async (fictionId) => {
+export const getFictionPage = async (fictionId) => {// TODO: Remove this function
   var url = "https://www.royalroad.com/fiction/" + fictionId;
   var htmlString =
-    await getPageText(url)
+    await getPageHtml(url)
     .then(response => {return response;});
 
   return htmlString;

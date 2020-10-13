@@ -8,17 +8,8 @@
  import HTML from "react-native-render-html";
  import { useFocusEffect } from '@react-navigation/native';
 
- import { getFictionPage, getPageText, } from './network.js';
+ import { getFictionPage, getPageHtml, } from './network.js';
  import { parseForChapterLinks, parseChapterContent } from './parse.js';
-
- const fictionPageButton = async (fictionId, { navigation }) => {
-   var fictionPage =
-     await getFictionPage(fictionId)
-     .then(response => {return response;});
-   var chapterLinks = parseForChapterLinks(fictionPage);
-   // console.log(chapterLinks);
-   navigation.navigate('Chapter List', chapterLinks);
- };
 
  export const homeScreen = ({ navigation }) => {
    const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +32,11 @@
        <Button
          title={isLoading ? "Loading..." : "Get Page"}
          disabled={isLoading ? true : false}
+         onPress={async () => {
+           setIsLoading(true);
+           navigation.navigate('Chapter List', fictionId);
+         }}
+       />
          onPress={() => {
            setIsLoading(true);
            fictionPageButton(fictionId, {navigation})
@@ -51,7 +47,20 @@
  };
 
  export const chapterList = ({ route, navigation }) => {
-   const chapterLinks = route.params;
+   const fictionId = route.params
+   const [fictionPage, setFictionPage] = useState('');
+
+   const getFictionAsync = async () => {
+     var fictionPage =
+      await getFictionPage(fictionId)
+      .then(response => {return response;});
+     setFictionPage(fictionPage);
+   }
+   if (!fictionPage) {
+     getFictionAsync();
+   }
+
+   var chapterLinks = parseForChapterLinks(fictionPage);
    return (
      <ScrollView>
        {chapterLinks.map((link) => (
@@ -69,25 +78,19 @@
  export const readChapter = ({ route, navigation }) => {
    const [chapterUrl, setChapterUrl] = useState(route.params);
    const [htmlString, setHtmlString] = useState('');
-   // console.log("chapterUrl: " + chapterUrl);
 
    useEffect(() => {
-     const getPageAsync = async () => {
+     const getChapterAsync = async () => {
        var htmlString =
-         await getPageText(chapterUrl)
+         await getPageHtml(chapterUrl)
          .then(response => {return response;});
-       // console.log("async: " + htmlString);
-
        setHtmlString(htmlString);
      };
 
-     getPageAsync(chapterUrl);
+     getChapterAsync(chapterUrl);
    }, []);
 
-   // console.log("sync: " + htmlString);
    const chapterContent = parseChapterContent(htmlString);
-   // console.log("chapterContent: " + chapterContent);
-
    const contentWidth = useWindowDimensions().width;
    return (
      <ScrollView style={{ flex: 1 }}>
