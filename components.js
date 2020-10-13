@@ -71,12 +71,14 @@
  export const chapterList = ({ route, navigation }) => {
    const fictionId = route.params
    const [fictionPage, setFictionPage] = useState('');
+   const [isLoading, setIsLoading] = useState(true);
 
    const getFictionAsync = async () => {
      var fictionPage =
       await getFictionPage(fictionId)
       .then(response => {return response;});
      setFictionPage(fictionPage);
+     setIsLoading(false);
    }
    if (!fictionPage) {
      getFictionAsync();
@@ -84,22 +86,28 @@
 
    var chapterLinks = parseForChapterLinks(fictionPage);
    return (
-     <ScrollView>
-       {chapterLinks.map((link) => (
-         <Button
-           title={link}
-           onPress={() => {
-             navigation.navigate('Read Chapter', link);
-           }}
-         />
-       ))}
-     </ScrollView>
+     <>
+      { isLoading
+         ? <Text>Loading...</Text>
+         : <ScrollView>
+             {chapterLinks.map((link) => (
+               <Button
+                 title={link}
+                 onPress={() => {
+                   navigation.navigate('Read Chapter', link);
+                 }}
+               />
+             ))}
+           </ScrollView>
+       }
+     </>
    );
  };
 
  export const readChapter = ({ route, navigation }) => {
-   const [chapterUrl, setChapterUrl] = useState(route.params);
+   const chapterUrl  = route.params;
    const [htmlString, setHtmlString] = useState('');
+   const [isLoading, setIsLoading] = useState(true);
 
    useEffect(() => {
      const getChapterAsync = async () => {
@@ -107,6 +115,7 @@
          await getPageHtml(chapterUrl)
          .then(response => {return response;});
        setHtmlString(htmlString);
+       setIsLoading(false);
      };
 
      getChapterAsync(chapterUrl);
@@ -115,8 +124,13 @@
    const chapterContent = parseChapterContent(htmlString);
    const contentWidth = useWindowDimensions().width;
    return (
-     <ScrollView style={{ flex: 1 }}>
-       <HTML html={chapterContent} contentWidth={contentWidth} />
-     </ScrollView>
+     <>
+      { isLoading
+          ? <Text>Loading...</Text>
+          : <ScrollView style={{ flex: 1 }}>
+              <HTML html={chapterContent} contentWidth={contentWidth} />
+            </ScrollView>
+      }
+     </>
    );
  };
