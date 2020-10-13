@@ -8,7 +8,7 @@
  import HTML from "react-native-render-html";
  import { useFocusEffect } from '@react-navigation/native';
 
- import { getFictionPage, getPageHtml, } from './network.js';
+ import { getPageHtml, } from './network.js';
  import { parseForChapterLinks, parseChapterContent } from './parse.js';
 
  export const homeScreen = ({ navigation }) => {
@@ -57,34 +57,52 @@
  };
 
  export const searchResults = ({ route, navigation }) => {
-    const searchUrl =
+   const url =
       "https://www.royalroad.com/fictions/search?title=" +
       route.params;
-    console.log(searchUrl);
-   // TODO: Fetch and display search html
+   const [htmlString, setHtmlString] = useState('');
+   const [isLoading, setIsLoading] = useState(true);
 
-   return (
-     <Text>{searchUrl}</Text>
-   );
+   if (!htmlString) {
+     const getHtmlAsync = async () => {
+      var htmlString =
+        await getPageHtml(url)
+        .then(response => {return response;});
+      setHtmlString(htmlString);
+      setIsLoading(false);
+     }
+     getHtmlAsync();
+   }
+
+   const contentWidth = useWindowDimensions().width;
+   if (isLoading) {
+     return (<Text>Loading...</Text>);
+   } else {
+     return (
+        <ScrollView style={{ flex: 1 }}>
+          <HTML html={htmlString} contentWidth={contentWidth} />
+        </ScrollView>
+     );
+   }
  };
 
  export const chapterList = ({ route, navigation }) => {
-   const fictionId = route.params
-   const [fictionPage, setFictionPage] = useState('');
+   const url = "https://www.royalroad.com/fiction/" + route.params;
+   const [htmlString, setHtmlString] = useState('');
    const [isLoading, setIsLoading] = useState(true);
 
-   const getFictionAsync = async () => {
-     var fictionPage =
-      await getFictionPage(fictionId)
-      .then(response => {return response;});
-     setFictionPage(fictionPage);
-     setIsLoading(false);
-   }
-   if (!fictionPage) {
-     getFictionAsync();
+   if (!htmlString) {
+     const getHtmlAsync = async () => {
+      var htmlString =
+        await getPageHtml(url)
+        .then(response => {return response;});
+      setHtmlString(htmlString);
+      setIsLoading(false);
+     }
+     getHtmlAsync();
    }
 
-   var chapterLinks = parseForChapterLinks(fictionPage);
+   const chapterLinks = parseForChapterLinks(htmlString);
    return (
      <>
       { isLoading
@@ -109,17 +127,14 @@
    const [htmlString, setHtmlString] = useState('');
    const [isLoading, setIsLoading] = useState(true);
 
-   useEffect(() => {
-     const getChapterAsync = async () => {
-       var htmlString =
-         await getPageHtml(chapterUrl)
-         .then(response => {return response;});
-       setHtmlString(htmlString);
-       setIsLoading(false);
-     };
-
-     getChapterAsync(chapterUrl);
-   }, []);
+   const getChapterAsync = async () => {
+     var htmlString =
+       await getPageHtml(chapterUrl)
+       .then(response => {return response;});
+     setHtmlString(htmlString);
+     setIsLoading(false);
+   };
+   getChapterAsync(chapterUrl);
 
    const chapterContent = parseChapterContent(htmlString);
    const contentWidth = useWindowDimensions().width;
