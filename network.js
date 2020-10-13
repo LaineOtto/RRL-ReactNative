@@ -2,7 +2,6 @@
  *  network.js - For making network requests
  *
  */
-
 export const getPageText = async (url) => {
   var htmlString =
     await fetch(url)
@@ -13,13 +12,12 @@ export const getPageText = async (url) => {
     .catch((error) => {
       console.error(error);
   });
-  
+
   return htmlString;
 }
 
 export const getFictionPage = async (fictionId) => {
   var url = "https://www.royalroad.com/fiction/" + fictionId;
-  console.log("url: " + url);
   var htmlString =
     await getPageText(url)
     .then(response => {return response;});

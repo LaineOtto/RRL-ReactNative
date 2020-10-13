@@ -1,10 +1,9 @@
-import React, { useState, Suspense } from 'react';
-import { View, Text, TextInput, Button, ScrollView } from 'react-native';
+import React, { useState, Suspense, useEffect } from 'react';
+import { View, Text, TextInput, Button, ScrollView, useWindowDimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-// import AsyncStorage from '@react-native-community/async-storage';
 import { WebView } from 'react-native-webview';
-
+import HTML from "react-native-render-html";
 
 import { getFictionPage, getPageText, } from './network.js';
 import { parseForChapterLinks, } from './parse.js';
@@ -14,6 +13,7 @@ const fictionPageButton = async (fictionId, { navigation }) => {
     await getFictionPage(fictionId)
     .then(response => {return response;});
   var chapterLinks = parseForChapterLinks(fictionPage);
+  console.log(chapterLinks);
   navigation.navigate('Chapter List', chapterLinks);
 }
 
@@ -52,24 +52,39 @@ const chapterList = ({ route, navigation }) => {
   );
 }
 
-const getPageAsync = async (chapterUrl) => {
-  var htmlString =
-    await getPageText(chapterUrl)
-    .then(response => {return response;});
-  console.log(htmlString);
-  return htmlString;
-}
-
 const readChapter = ({ route, navigation }) => {
-  var chapterUrl = route.params;
-  console.log(chapterUrl);
-  // var htmlString = getPageAsync(chapterUrl);
-  // console.log(htmlString);
+  const [chapterUrl, setChapterUrl] = useState(route.params);
+  const [htmlString, setHtmlString] = useState('');
+  console.log("chapterUrl: " + chapterUrl);
+  // var htmlString = getPageAsync(chapterUrl)
+
+  useEffect(() => {
+    const getPageAsync = async () => {
+      var htmlString =
+        await getPageText(chapterUrl)
+        .then(response => {return response;});
+      console.log("async: " + htmlString);
+
+      setHtmlString(htmlString);
+    };
+
+    getPageAsync(chapterUrl);
+  }, []);
+
+  console.log("sync: " + htmlString);
+  const contentWidth = useWindowDimensions().width;
   return (
-    <WebView
-      source={{ uri: chapterUrl }}
-    />
+    <ScrollView style={{ flex: 1 }}>
+      <HTML html={htmlString} contentWidth={contentWidth} />
+    </ScrollView>
   );
+  // return (
+  //   <ScrollView>
+  //     <Text>
+  //       asdf
+  //     </Text>
+  //   </ScrollView>
+  // );
 }
 
 const Stack = createStackNavigator();
