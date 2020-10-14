@@ -2,14 +2,23 @@
  *  components.js - React rendering components
  *
  */
- import React, { useState, useEffect } from 'react';
- import { View, Text, TextInput, Button, ScrollView, useWindowDimensions } from 'react-native';
+ import React, { useState } from 'react';
+ import {
+   View,
+   Text,
+   TextInput,
+   Button,
+   ScrollView,
+   useWindowDimensions } from 'react-native';
  import { WebView } from 'react-native-webview';
  import HTML from "react-native-render-html";
  import { useFocusEffect } from '@react-navigation/native';
 
  import { getPageHtml, } from './network.js';
- import { parseForChapterLinks, parseChapterContent } from './parse.js';
+ import {
+   parseChapterLinks,
+   parseChapterContent,
+   parseSearchResults } from './parse.js';
 
  export const homeScreen = ({ navigation }) => {
    const [isLoading, setIsLoading] = useState(false);
@@ -65,14 +74,18 @@
 
    if (!htmlString) {
      const getHtmlAsync = async () => {
-      var htmlString =
+      var pageHtml =
         await getPageHtml(url)
         .then(response => {return response;});
-      setHtmlString(htmlString);
+      setHtmlString(pageHtml);
       setIsLoading(false);
      }
      getHtmlAsync();
    }
+
+    parseSearchResults(htmlString);
+   // const chapterData = parseSearchResults(htmlString);
+   // console.log("chapterData: " + chapterData);
 
    const contentWidth = useWindowDimensions().width;
    if (isLoading) {
@@ -102,7 +115,7 @@
      getHtmlAsync();
    }
 
-   const chapterLinks = parseForChapterLinks(htmlString);
+   const chapterLinks = parseChapterLinks(htmlString);
    return (
      <>
       { isLoading
@@ -111,6 +124,7 @@
              {chapterLinks.map((link) => (
                <Button
                  title={link}
+                 key={link.toString()}
                  onPress={() => {
                    navigation.navigate('Read Chapter', link);
                  }}
