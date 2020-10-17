@@ -65,40 +65,6 @@
    );
  };
 
- export const searchResults = ({ route, navigation }) => {
-   const url =
-      "https://www.royalroad.com/fictions/search?title=" +
-      route.params;
-   const [htmlString, setHtmlString] = useState('');
-   const [isLoading, setIsLoading] = useState(true);
-
-   if (!htmlString) {
-     const getHtmlAsync = async () => {
-      var pageHtml =
-        await getPageHtml(url)
-        .then(response => {return response;});
-      setHtmlString(pageHtml);
-      setIsLoading(false);
-     }
-     getHtmlAsync();
-   }
-
-    parseSearchResults(htmlString);
-   // const chapterData = parseSearchResults(htmlString);
-   // console.log("chapterData: " + chapterData);
-
-   const contentWidth = useWindowDimensions().width;
-   if (isLoading) {
-     return (<Text>Loading...</Text>);
-   } else {
-     return (
-        <ScrollView style={{ flex: 1 }}>
-          <HTML html={htmlString} contentWidth={contentWidth} />
-        </ScrollView>
-     );
-   }
- };
-
  export const chapterList = ({ route, navigation }) => {
    const url = "https://www.royalroad.com/fiction/" + route.params;
    const [htmlString, setHtmlString] = useState('');
@@ -162,4 +128,53 @@
       }
      </>
    );
+ };
+
+ export const searchResults = ({ route, navigation }) => {
+  console.log("call searchResults");
+  const url =
+     "https://www.royalroad.com/fictions/search?title=" +
+     route.params;
+  const [isLoading, setIsLoading] = useState(true);
+  const [results, setResults] = useState([]);
+
+  const fetchData = async () => {
+    console.log("FetchData");
+    try {
+      const pageHtml =
+        await getPageHtml(url)
+        .then(response => {return response;});
+      const htmlString = await pageHtml;
+      return htmlString;
+    } catch(e){
+      console.error(e);
+    }
+  }
+
+  const getSearchResults = async () => {
+    let htmlString = await fetchData();
+    console.log("htmlString: " + htmlString);
+    let newSearchResults = await parseSearchResults(htmlString);
+    setResults(newSearchResults);
+    console.log("getSearchResults: " + newSearchResults);
+    setIsLoading(false);
+  }
+
+  console.log("top results: " + results.toString());
+  if (results.toString() == '') {
+    console.log("callResults");
+    getSearchResults();
+    console.log("nosync results: " + results);
+  }
+
+
+  const contentWidth = useWindowDimensions().width;
+  if (isLoading) {
+    return (<Text>Loading...</Text>);
+  }
+  return (
+     <ScrollView style={{ flex: 1 }}>
+       <HTML html={results.toString()} contentWidth={contentWidth} />
+     </ScrollView>
+  );
  };

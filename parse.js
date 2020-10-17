@@ -2,7 +2,7 @@
  *  parse.js - Where the parsing happens
  *
  */
-import { useState } from 'react';
+import React, { useState } from 'react';
 const cheerio = require('react-native-cheerio');
 
 export const parseChapterLinks = (htmlString) => {
@@ -25,25 +25,35 @@ export const parseChapterContent = (htmlString) => {
   return chapterContent;
 }
 
+export const getFictionUrl = ($) => {
+
+}
+
 export const parseSearchResults = (htmlString) => {
-  const [chapterData, setChapterData] = useState([]);
   console.log("parse");
+  // const [fictionData, setfictionData] = useState([]);
   const $ = cheerio.load(htmlString);
-  const chapterUrl = $('.fiction-title a').attr('href');
-  const chapterTitle = $('.fiction-title').text();
-  chapterUrl.each(function(i, elem) {
-    console.log("each: " + elem);
+  $('.fiction-title').map(function(i, elem) {
+    const newFictionUrl =
+      "https://www.royalroad.com"
+      + $(this).children('a').attr('href');
+    const newFictionTitle = $(this).text();
+    console.log(newFictionUrl);
+    console.log(newFictionTitle);
+    // const data = [{
+    //   index: i,
+    //   fictionUrl: fictionUrl,
+    //   fictionTitle: fictionTitle
+    // }];
+    // console.log("data: " + data);
+
+    // const newData = fictionData.concat({
+    //   index: i,
+    //   fictionUrl: fictionUrl,
+    //   fictionTitle: fictionTitle
+    // });
+    // setfictionData(...fictionData, newData);
   });
-  // console.log("chapterUrl: " + chapterUrl);
-  console.log("chapterTitle: " + chapterTitle);
-
-
-  // $('.fiction-title').each(function(i, elem) {
-  //   console.log("each: " + i);
-  //   const chapterUrl = $('.fiction-title a').attr('href');
-  //   const chapterTitle = $(this).text();
-  //   setChapterData([...chapterData, {id:i,title:chapterTitle,url:chapterUrl}]);
-  //   console.log("chapterData: " + chapterData);
-  // });
-  // return chapterData;
+  // return fictionData;
+  return "foo";
 }
