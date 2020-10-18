@@ -2,7 +2,7 @@
 *  components.js - React rendering components
 *
 */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -61,11 +61,11 @@ export const homeScreen = ({ navigation }) => {
  *    url: url of the fiction page
  */
 export const chapterList = ({ route, navigation }) => {
-  const url = "https://www.royalroad.com/fiction/" + route.params;
+  const url = route.params;
   const [htmlString, setHtmlString] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  if (!htmlString) {
+  useEffect(() => {
     const getHtmlAsync = async () => {
       var htmlString =
       await getPageHtml(url)
@@ -74,7 +74,7 @@ export const chapterList = ({ route, navigation }) => {
       setIsLoading(false);
     }
     getHtmlAsync();
-  }
+  }, []);
 
   const chapterLinks = parseChapterLinks(htmlString);
   return (
@@ -87,7 +87,7 @@ export const chapterList = ({ route, navigation }) => {
           title={link}
           key={link.toString()}
           onPress={() => {
-          navigation.navigate('Read Chapter', link);
+            navigation.navigate('Read Chapter', link);
           }}
           />
         ))}
@@ -101,17 +101,20 @@ export const readChapter = ({ route, navigation }) => {
   const chapterUrl  = route.params;
   const [htmlString, setHtmlString] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  var chapterContent = '';
 
-  const getChapterAsync = async () => {
-    var htmlString =
-    await getPageHtml(chapterUrl)
-    .then(response => {return response;});
-    setHtmlString(htmlString);
-    setIsLoading(false);
-  };
-  getChapterAsync(chapterUrl);
+  useEffect(() => {
+    const getChapterAsync = async () => {
+      var htmlString =
+      await getPageHtml(chapterUrl)
+      .then(response => {return response;});
+      setHtmlString(htmlString);
+      setIsLoading(false);
+    };
+    getChapterAsync(chapterUrl);
+  }, []);
 
-  const chapterContent = parseChapterContent(htmlString);
+  chapterContent = parseChapterContent(htmlString);
   const contentWidth = useWindowDimensions().width;
   return (
     <>
@@ -125,18 +128,20 @@ export const readChapter = ({ route, navigation }) => {
   );
 };
 
-const searchResultsList = (results) => {
-  //in map:
-  //list of buttons
-  //navigation.navigate('Chapter List', fictionUrl);
-}
-
 export const searchResults = ({ route, navigation }) => {
   const url =
   "https://www.royalroad.com/fictions/search?title=" +
   route.params;
   const [isLoading, setIsLoading] = useState(true);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState([{
+    id: "0",
+    fictionTitle: "Dummy Title",
+    fictionUrl: "Dummy Url"
+  }]);
+
+  useEffect(() => {
+    getSearchResults();
+  }, []);
 
   const fetchData = async () => {
     console.log("FetchData");
@@ -160,19 +165,19 @@ export const searchResults = ({ route, navigation }) => {
     setIsLoading(false);
   }
 
-  if (isLoading) {
-    getSearchResults();
-    console.log("nosync results: " + results[0].fictionUrl);
-  }
-
-
   const contentWidth = useWindowDimensions().width;
   if (isLoading) {
     return (<Text>Loading...</Text>);
+  } else {
+    return (
+      <ScrollView style={{ flex: 1 }}>
+        <Button
+          title={results[0].fictionTitle}
+          onPress={() => {
+            navigation.navigate('Chapter List', results[0].fictionUrl)
+          }}
+        />
+      </ScrollView>
+    );
   }
-  return (
-    <ScrollView style={{ flex: 1 }}>
-      <HTML html={results[0].fictionUrl} contentWidth={contentWidth} />
-    </ScrollView>
-  );
 };
