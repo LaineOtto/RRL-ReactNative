@@ -128,6 +128,21 @@ export const readChapter = ({ route, navigation }) => {
   );
 };
 
+const ChapterButton = (props) => {
+  const navigation = props.navigation;
+  const result = props.result;
+  console.log("index: " + result.id);
+  console.log("fictionTitle: " + result.fictionTitle);
+  return (
+    <Button
+      title={result.fictionTitle}
+      onPress={() => {
+        navigation.navigate('Chapter List', result.fictionUrl)
+      }}
+    />
+  );
+}
+
 export const searchResults = ({ route, navigation }) => {
   const url =
   "https://www.royalroad.com/fictions/search?title=" +
@@ -165,18 +180,31 @@ export const searchResults = ({ route, navigation }) => {
     setIsLoading(false);
   }
 
+  const ButtonList = (props) => {
+    var results = props.results;
+    const navigation = props.navigation;
+
+    console.log("results[0] JSON: " + JSON.stringify(results[0]));
+    let fictionButtons = [];
+    for (var i = 0; i < results.length; i++) {
+      let result = results[i];
+      console.log("for: " + JSON.stringify(result));
+      const newChapterButton = <ChapterButton result={result} navigation={navigation} />;
+      // console.log("button: " + newChapterButton);
+      fictionButtons.push(newChapterButton);
+    }
+
+    console.log("fictionButtons: " + fictionButtons[0]);
+    return fictionButtons;
+  }
+
   const contentWidth = useWindowDimensions().width;
   if (isLoading) {
     return (<Text>Loading...</Text>);
   } else {
     return (
       <ScrollView style={{ flex: 1 }}>
-        <Button
-          title={results[0].fictionTitle}
-          onPress={() => {
-            navigation.navigate('Chapter List', results[0].fictionUrl)
-          }}
-        />
+        <ButtonList results={results} navigation={navigation}/>
       </ScrollView>
     );
   }
