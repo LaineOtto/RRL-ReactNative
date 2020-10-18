@@ -41,14 +41,18 @@ export const homeScreen = ({ navigation }) => {
         style={{height: 40}}
         placeholder="Search Term"
         onChangeText={text => setSearchTerm(text)}
+        onSubmitEditing={() => {
+          setIsLoading(true);
+          navigation.navigate('Search Results', searchTerm);
+        }}
         defaultValue={searchTerm}
       />
       <Button
         title={isLoading ? "Loading..." : "Search"}
         disabled={isLoading ? true : false}
         onPress={() => {
-        setIsLoading(true);
-        navigation.navigate('Search Results', searchTerm);
+          setIsLoading(true);
+          navigation.navigate('Search Results', searchTerm);
         }}
       />
     </View>
@@ -128,21 +132,6 @@ export const readChapter = ({ route, navigation }) => {
   );
 };
 
-const ChapterButton = (props) => {
-  const navigation = props.navigation;
-  const result = props.result;
-  console.log("index: " + result.id);
-  console.log("fictionTitle: " + result.fictionTitle);
-  return (
-    <Button
-      title={result.fictionTitle}
-      onPress={() => {
-        navigation.navigate('Chapter List', result.fictionUrl)
-      }}
-    />
-  );
-}
-
 export const searchResults = ({ route, navigation }) => {
   const url =
   "https://www.royalroad.com/fictions/search?title=" +
@@ -173,28 +162,36 @@ export const searchResults = ({ route, navigation }) => {
 
   const getSearchResults = async () => {
     let htmlString = await fetchData();
-    console.log("htmlString: " + htmlString);
     let newSearchResults = await parseSearchResults(htmlString);
     setResults(newSearchResults);
-    console.log("getSearchResults: " + newSearchResults[0].fictionTitle);
     setIsLoading(false);
+  }
+
+  const ChapterButton = (props) => {
+    const navigation = props.navigation;
+    const result = props.result;
+    console.log("index: " + result.id);
+    console.log("fictionTitle: " + result.fictionTitle);
+    return (
+      <Button
+        title={result.fictionTitle}
+        onPress={() => {
+          navigation.navigate('Chapter List', result.fictionUrl)
+        }}
+      />
+    );
   }
 
   const ButtonList = (props) => {
     var results = props.results;
     const navigation = props.navigation;
-
-    console.log("results[0] JSON: " + JSON.stringify(results[0]));
     let fictionButtons = [];
     for (var i = 0; i < results.length; i++) {
       let result = results[i];
-      console.log("for: " + JSON.stringify(result));
-      const newChapterButton = <ChapterButton result={result} navigation={navigation} />;
-      // console.log("button: " + newChapterButton);
+      const newChapterButton =
+        <ChapterButton result={result} navigation={navigation} />;
       fictionButtons.push(newChapterButton);
     }
-
-    console.log("fictionButtons: " + fictionButtons[0]);
     return fictionButtons;
   }
 
