@@ -9,7 +9,7 @@ export const parseChapterLinks = (htmlString) => {
   const $ = cheerio.load(htmlString);
   const chapterLinks = [];
   var j = 0;
-  $('td a').each(function(i, elem) { //for each 'td a' add its link to chLinks
+  $('td a').each(function(i, elem) {
     var href = $(this).attr('href');
     if (href) {
       chapterLinks[j] = "https://www.royalroad.com" + href;
@@ -25,10 +25,6 @@ export const parseChapterContent = (htmlString) => {
   return chapterContent;
 }
 
-// export const getFictionUrl = ($) => {
-//
-// }
-
 export const parseSearchResults = (htmlString) => {
   const $ = cheerio.load(htmlString, {normalizeWhitespace: true});
   let fictionData = [];
@@ -39,8 +35,8 @@ export const parseSearchResults = (htmlString) => {
     const newFictionTitle = $(this).text();
     let newFictionData = {
       id: i,
-      fictionTitle: newFictionTitle,
-      fictionUrl: newFictionUrl
+      title: newFictionTitle,
+      url: newFictionUrl
     };
     return newFictionData;
   });
