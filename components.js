@@ -39,20 +39,6 @@ export const homeScreen = ({ navigation }) => {
     <View style={{padding: 10}}>
       <TextInput // TODO: Check this raw input
         style={{height: 40}}
-        placeholder="Fiction Id"
-        onChangeText={text => setFictionId(text)}
-        defaultValue={fictionId}
-      />
-      <Button
-        title={isLoading ? "Loading..." : "Get Page"}
-        disabled={isLoading ? true : false}
-        onPress={async () => {
-        setIsLoading(true);
-        navigation.navigate('Chapter List', fictionId);
-        }}
-      />
-      <TextInput // TODO: Check this raw input
-        style={{height: 40}}
         placeholder="Search Term"
         onChangeText={text => setSearchTerm(text)}
         defaultValue={searchTerm}
@@ -69,7 +55,11 @@ export const homeScreen = ({ navigation }) => {
   );
 };
 
-
+/**
+ *  chapterList - list of all chapters from a fiction
+ *  params:
+ *    url: url of the fiction page
+ */
 export const chapterList = ({ route, navigation }) => {
   const url = "https://www.royalroad.com/fiction/" + route.params;
   const [htmlString, setHtmlString] = useState('');
@@ -134,6 +124,12 @@ export const readChapter = ({ route, navigation }) => {
     </>
   );
 };
+
+const searchResultsList = (results) => {
+  //in map:
+  //list of buttons
+  //navigation.navigate('Chapter List', fictionUrl);
+}
 
 export const searchResults = ({ route, navigation }) => {
   const url =
