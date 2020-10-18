@@ -136,7 +136,12 @@ export const readChapter = ({ route, navigation }) => {
 };
 
 const ListItem = ({ item, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
+  <TouchableOpacity style={{
+      margin: 5,
+      backgroundColor: '#337ab7', //<- The royalroad blue
+      alignItems: 'center',
+      alignContent: 'center',
+      flexWrap: 'wrap'}} onPress={onPress}>
     <Text style={{height: 40}}>{item.title}</Text>
   </TouchableOpacity>
 );

@@ -4,6 +4,7 @@
  */
 import React, { useState } from 'react';
 const cheerio = require('react-native-cheerio');
+import voca from 'voca';
 
 export const parseChapterLinks = (htmlString) => {
   const $ = cheerio.load(htmlString);
@@ -28,11 +29,28 @@ export const parseChapterContent = (htmlString) => {
 export const parseSearchResults = (htmlString) => {
   const $ = cheerio.load(htmlString, {normalizeWhitespace: true});
   let fictionData = [];
+  // fictionData = $('.fiction-list-item').map(function(i, elem) {
+  //   console.log("i: " + $(this).children());
+  //   const newFictionUrl =
+  //     "https://www.royalroad.com"
+  //     + $(this).children('.fiction-title a').attr('href');
+  //   var newFictionTitle = $(this).children('.fiction-title').text();
+  //   console.log("newFictionUrl: " + newFictionUrl);
+  //   console.log("newFictionTitle: " + newFictionTitle);
+  //   newFictionTitle = voca.trim(newFictionTitle);
+  //   let newFictionData = {
+  //     id: i,
+  //     title: newFictionTitle,
+  //     url: newFictionUrl
+  //   };
+  //   return newFictionData;
+  // });
   fictionData = $('.fiction-title').map(function(i, elem) {
     const newFictionUrl =
       "https://www.royalroad.com"
       + $(this).children('a').attr('href');
-    const newFictionTitle = $(this).text();
+    var newFictionTitle = $(this).text();
+    newFictionTitle = voca.trim(newFictionTitle);
     let newFictionData = {
       id: i,
       title: newFictionTitle,
