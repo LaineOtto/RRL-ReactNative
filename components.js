@@ -131,7 +131,7 @@
  };
 
  export const searchResults = ({ route, navigation }) => {
-  console.log("call searchResults");
+  // console.log("call searchResults");
   const url =
      "https://www.royalroad.com/fictions/search?title=" +
      route.params;
@@ -160,9 +160,9 @@
     setIsLoading(false);
   }
 
-  console.log("top results: " + results.toString());
-  if (results.toString() == '') {
-    console.log("callResults");
+  // console.log("top results: " + results.toString());
+  if (isLoading) {
+    // console.log("callResults");
     getSearchResults();
     console.log("nosync results: " + results);
   }
@@ -174,7 +174,7 @@
   }
   return (
      <ScrollView style={{ flex: 1 }}>
-       <HTML html={results.toString()} contentWidth={contentWidth} />
+       <HTML html={results[0].fictionUrl} contentWidth={contentWidth} />
      </ScrollView>
   );
  };

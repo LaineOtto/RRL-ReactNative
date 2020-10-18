@@ -25,35 +25,30 @@ export const parseChapterContent = (htmlString) => {
   return chapterContent;
 }
 
-export const getFictionUrl = ($) => {
-
-}
+// export const getFictionUrl = ($) => {
+//
+// }
 
 export const parseSearchResults = (htmlString) => {
   console.log("parse");
-  // const [fictionData, setfictionData] = useState([]);
   const $ = cheerio.load(htmlString);
-  $('.fiction-title').map(function(i, elem) {
+  let fictionData = [];
+  fictionData = $('.fiction-title').map(function(i, elem) {
     const newFictionUrl =
       "https://www.royalroad.com"
       + $(this).children('a').attr('href');
     const newFictionTitle = $(this).text();
     console.log(newFictionUrl);
     console.log(newFictionTitle);
-    // const data = [{
-    //   index: i,
-    //   fictionUrl: fictionUrl,
-    //   fictionTitle: fictionTitle
-    // }];
-    // console.log("data: " + data);
 
-    // const newData = fictionData.concat({
-    //   index: i,
-    //   fictionUrl: fictionUrl,
-    //   fictionTitle: fictionTitle
-    // });
-    // setfictionData(...fictionData, newData);
+    let newFictionData = {
+      id: i,
+      fictionTitle: newFictionTitle,
+      fictionUrl: newFictionUrl
+    };
+    console.log("newFictionData: " + newFictionData.fictionTitle);
+    return newFictionData;
   });
-  // return fictionData;
-  return "foo";
+  console.log("fictionData: " + fictionData[0].fictionUrl);
+  return fictionData;
 }
